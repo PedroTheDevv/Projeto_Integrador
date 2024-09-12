@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 const register = (req, res) => {
-    const { name, email, password } = req.body;
-    bcrypt.hash(password, 10, (err, hashedPassword) => {
-        if (err) return res.status(500).send('Error hashing password');
+    const { name, email, senha } = req.body;
+    bcrypt.hash(senha, 10, (err, hashedPassword) => {
+        if (err) return res.status(500).send('Error hashing senha');
         db.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword], (err, result) => {
             if (err) return res.status(500).send('Error registering user');
             res.status(201).send('User registered');

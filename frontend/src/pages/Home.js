@@ -1,8 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 const Home = () => {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        const products = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/products');
+                setData(response.data);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+            }
+        }
+        products();
+    })
+
     return (
         <div className="home-container">
             {/* Cabeçalho */}
@@ -31,15 +47,15 @@ const Home = () => {
             <section id="featured" className="featured-products">
                 <h2 className="section-title">Destaques</h2>
                 <div className="product-cards">
-                    <div className="product-card">
-                        <img src="https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSu4KW8y61tjr-5BgYCpmoy5sXW56sCmUCaiLapWpT8crnnDpA5OxRLRkSa4RvQAnpHVvFXw-HrxyTWxous01Nw6-NOBprB6Q&usqp=CAE" alt="Produto 1" className="product-image" />
-                        <h3 className="product-title">	
-                        	
-Assassin's Creed Mirage - PS5 (Mídia Física)</h3>
-                        <p className="product-description">R$199,90</p>
-                        <a href="#featured" className="cta-button">Comprar Agora</a> <a href="#cart" className="cta-button">🛒</a>
-                    </div>
-                    <div className="product-card">
+                    {data.map(item => (
+                        <div className="product-card">
+                            <img src={item.image_url} alt="Produto 1" className="product-image" />
+                            <h3 className="product-title">{item.name}</h3>
+                            <p className="product-description">R${item.price}</p>
+                            <a href="#featured" className="cta-button">Comprar Agora</a> <a href="#cart" className="cta-button">🛒</a>
+                        </div>
+                    ))}
+                    {/*<div className="product-card">
                         <img src="https://images.tcdn.com.br/img/img_prod/1211726/ea_sports_fc_24_1713_1_44ce0c1cc2a96d5cd1fbe4767d19ac8c.png" alt="Produto 2" className="product-image" />
                         <h3 className="product-title">EA Sports FC 24 - PlayStation 5  (Mídia Física) </h3>
                         <p className="product-description">R$182,79</p>
@@ -80,7 +96,7 @@ Assassin's Creed Mirage - PS5 (Mídia Física)</h3>
                         <h3 className="product-title">Star War Jedi: Fallen Order Edição Padrão - Xbox One</h3>
                         <p className="product-description">R$55,90</p>
                         <a href="#featured" className="cta-button">Comprar Agora</a> <a href="#cart" className="cta-button">🛒</a>
-                    </div>
+                    </div>*/}
                 </div>
             </section>
 
@@ -161,8 +177,8 @@ Assassin's Creed Mirage - PS5 (Mídia Física)</h3>
                     </div>
                 </div>
             </section>
-              {/* Outros Jogos*/}
-              <section className="new-arrivals">
+            {/* Outros Jogos*/}
+            <section className="new-arrivals">
                 <h2 className="section-title">Outros Jogos</h2>
                 <div className="product-cards"> {/* Reutiliza a classe para os cards */}
                     <div className="product-card">

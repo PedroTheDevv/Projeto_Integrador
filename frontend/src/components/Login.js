@@ -1,57 +1,72 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api"; // Ajuste o caminho conforme necessário
+import "../pages/Auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginUser({ email, password });
-      localStorage.setItem("token", response.data.token);
-
-      // Verifique o tipo de usuário e redirecione conforme necessário
-      if (response.data.isAdmin) {
-        navigate("/admin");
+      const response = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        alert("Login realizado com sucesso!");
+        const data = await response.json();
+        localStorage.setItem("authToken", data.token);
+        setEmail('');
+        setPassword('');
       } else {
-        navigate("/");
+        const errorData = await response.json();
+        alert(errorData.message || "Erro ao realizar o login.");
       }
-    } catch (err) {
-      setError("Email ou senha incorretos");
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao realizar o login.");
     }
   };
 
   return (
-    <div className="container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Senha</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Entrar</button>
-        {error && <p>{error}</p>}
-      </form>
+    <div className="auth-container">
+      <div className="form-container">
+        <h1>Login</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Seu email"
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="password">Senha:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Sua senha"
+            />
+          </div>
+          <button type="submit" className="auth-button">
+            Entrar
+          </button>
+        </form>
+        <p className="toggle-text">
+          Não tem uma conta?{" "}
+          <span onClick={() => window.location.href = '/registrar'} className="toggle-link">
+            Cadastre-se
+          </span>
+        </p>
+      </div>
     </div>
   );
 };
